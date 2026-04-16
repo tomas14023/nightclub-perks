@@ -14,16 +14,242 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      codes: {
+        Row: {
+          benefit_snapshot: string | null
+          code: string
+          created_at: string
+          customer_id: string
+          id: string
+          redeemed_at: string | null
+          redeemed_by: string | null
+          status: Database["public"]["Enums"]["code_status"]
+          venue_id: string
+          visit_id: string | null
+        }
+        Insert: {
+          benefit_snapshot?: string | null
+          code: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          status?: Database["public"]["Enums"]["code_status"]
+          venue_id: string
+          visit_id?: string | null
+        }
+        Update: {
+          benefit_snapshot?: string | null
+          code?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          redeemed_at?: string | null
+          redeemed_by?: string | null
+          status?: Database["public"]["Enums"]["code_status"]
+          venue_id?: string
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "codes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "codes_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "codes_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          last_visit_at: string | null
+          name: string | null
+          phone: string
+          total_visits: number
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_visit_at?: string | null
+          name?: string | null
+          phone: string
+          total_visits?: number
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_visit_at?: string | null
+          name?: string | null
+          phone?: string
+          total_visits?: number
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          user_id: string
+          venue_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          user_id: string
+          venue_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          user_id?: string
+          venue_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      venues: {
+        Row: {
+          active: boolean
+          benefit_description: string
+          benefit_headline: string
+          code_prefix: string
+          created_at: string
+          id: string
+          name: string
+          owner_id: string | null
+          slug: string
+        }
+        Insert: {
+          active?: boolean
+          benefit_description?: string
+          benefit_headline?: string
+          code_prefix?: string
+          created_at?: string
+          id?: string
+          name: string
+          owner_id?: string | null
+          slug: string
+        }
+        Update: {
+          active?: boolean
+          benefit_description?: string
+          benefit_headline?: string
+          code_prefix?: string
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string | null
+          slug?: string
+        }
+        Relationships: []
+      }
+      visits: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visits_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      user_in_venue: {
+        Args: { _user_id: string; _venue_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff"
+      code_status: "unused" | "redeemed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +376,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff"],
+      code_status: ["unused", "redeemed"],
+    },
   },
 } as const

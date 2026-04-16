@@ -119,13 +119,13 @@ const Validator = () => {
             )}
 
             {result.state === "redeemed" && (
-              <VelvetCard className="p-6 sm:p-8 border-yellow-500/30">
+              <VelvetCard className="p-6 sm:p-8 border-warning/30">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="size-12 rounded-full bg-yellow-500/15 flex items-center justify-center ring-1 ring-yellow-500/40">
-                    <AlertTriangle className="text-yellow-500" size={26} />
+                  <div className="size-12 rounded-full bg-warning/15 flex items-center justify-center ring-1 ring-warning/40">
+                    <AlertTriangle className="text-warning" size={26} />
                   </div>
                   <div>
-                    <div className="text-yellow-500 text-xs tracking-luxe uppercase">Already redeemed</div>
+                    <div className="text-warning text-xs tracking-luxe uppercase">Already redeemed</div>
                     <div className="font-serif text-2xl">{result.name ?? "Guest"}</div>
                   </div>
                 </div>

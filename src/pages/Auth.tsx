@@ -35,13 +35,15 @@ const Auth = () => {
       return;
     }
     setBusy(true);
+    const { email: em, password: pw } = parsed.data;
     if (mode === "signin") {
-      const { error } = await supabase.auth.signInWithPassword(parsed.data);
+      const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw });
       if (error) toast.error(error.message);
       else navigate("/admin");
     } else {
       const { error } = await supabase.auth.signUp({
-        ...parsed.data,
+        email: em,
+        password: pw,
         options: { emailRedirectTo: `${window.location.origin}/admin` },
       });
       if (error) toast.error(error.message);

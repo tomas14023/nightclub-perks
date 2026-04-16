@@ -235,6 +235,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      checkin_customer: {
+        Args: {
+          _email?: string
+          _name?: string
+          _phone: string
+          _venue_slug: string
+        }
+        Returns: {
+          benefit: string
+          code: string
+          code_id: string
+          customer_name: string
+          venue_name: string
+        }[]
+      }
+      gen_unique_code: { Args: { _prefix: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -242,9 +258,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      redeem_code: {
+        Args: { _code: string }
+        Returns: {
+          message: string
+          success: boolean
+        }[]
+      }
       user_in_venue: {
         Args: { _user_id: string; _venue_id: string }
         Returns: boolean
+      }
+      validate_code: {
+        Args: { _code: string }
+        Returns: {
+          benefit: string
+          code_id: string
+          customer_name: string
+          status: Database["public"]["Enums"]["code_status"]
+          venue_id: string
+        }[]
       }
     }
     Enums: {

@@ -2,95 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* ===== Amber Velvet — Upscale Lounge Design System =====
+   Dark leather + gold leaf. All colors HSL.
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core surfaces */
+    --background: 22 18% 4%;          /* void */
+    --foreground: 36 25% 92%;          /* warm cream */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 22 14% 6%;                 /* leather */
+    --card-foreground: 36 25% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 22 14% 6%;
+    --popover-foreground: 36 25% 92%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Gold leaf as primary */
+    --primary: 43 65% 53%;             /* #d4af37 */
+    --primary-foreground: 22 18% 4%;
+    --primary-glow: 43 80% 65%;
+    --gold-glow: 30 70% 32%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 22 12% 10%;
+    --secondary-foreground: 36 25% 92%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 22 10% 14%;
+    --muted-foreground: 25 8% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 43 65% 53%;
+    --accent-foreground: 22 18% 4%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 36 25% 92%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --success: 140 55% 45%;
+    --success-foreground: 22 18% 4%;
 
-    --radius: 0.5rem;
+    --border: 36 12% 14%;
+    --input: 36 12% 14%;
+    --ring: 43 65% 53%;
 
-    --sidebar-background: 0 0% 98%;
+    --radius: 0.75rem;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Velvet gradients */
+    --gradient-velvet: radial-gradient(circle at 50% 0%, hsl(var(--gold-glow) / 0.25), transparent 60%);
+    --gradient-gold: linear-gradient(135deg, hsl(43 65% 53%), hsl(43 80% 65%));
+    --gradient-leather: linear-gradient(180deg, hsl(22 14% 6%) 0%, hsl(22 18% 4%) 100%);
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Shadows */
+    --shadow-velvet: 0 30px 80px hsl(0 0% 0% / 0.9), inset 0 1px 0 hsl(0 0% 100% / 0.03);
+    --shadow-gold: 0 0 40px hsl(var(--primary) / 0.35);
+    --shadow-elegant: 0 10px 40px hsl(0 0% 0% / 0.6);
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Typography */
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Manrope', system-ui, sans-serif;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Sidebar (kept for shadcn) */
+    --sidebar-background: 22 14% 6%;
+    --sidebar-foreground: 36 25% 92%;
+    --sidebar-primary: 43 65% 53%;
+    --sidebar-primary-foreground: 22 18% 4%;
+    --sidebar-accent: 22 12% 10%;
+    --sidebar-accent-foreground: 36 25% 92%;
+    --sidebar-border: 36 12% 14%;
+    --sidebar-ring: 43 65% 53%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Force single theme — nightclub is always dark */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 22 18% 4%;
   }
 }
 
@@ -98,8 +84,45 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
+  html {
+    @apply bg-background;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .text-gold {
+    color: hsl(var(--primary));
+  }
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+  .bg-velvet {
+    background: var(--gradient-velvet);
+  }
+  .bg-leather {
+    background: var(--gradient-leather);
+  }
+  .shadow-velvet {
+    box-shadow: var(--shadow-velvet);
+  }
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  .ring-gold {
+    @apply ring-1 ring-primary/30;
+  }
+  .tracking-luxe {
+    letter-spacing: 0.4em;
+  }
+  .tracking-wider-luxe {
+    letter-spacing: 0.2em;
   }
 }

@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { AdminLayout } from "@/components/AdminLayout";
 import { VelvetCard } from "@/components/VelvetCard";
 import { Button } from "@/components/ui/button";
-import { Users, TicketCheck, UserPlus, Repeat, QrCode, Loader2, ScanLine } from "lucide-react";
+import { Users, TicketCheck, UserPlus, Repeat, QrCode, Loader2, ScanLine, Gift, Save } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { toast } from "sonner";
 
 type Venue = { id: string; name: string; slug: string };
 

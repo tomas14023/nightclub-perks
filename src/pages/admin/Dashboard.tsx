@@ -57,7 +57,7 @@ const Dashboard = () => {
     }).eq("id", venue.id);
     setSavingBenefit(false);
     if (error) toast.error(error.message);
-    else toast.success("Gift updated");
+    else toast.success(t("dashboard.giftUpdated"));
   }
 
   async function loadStats(venueId: string) {

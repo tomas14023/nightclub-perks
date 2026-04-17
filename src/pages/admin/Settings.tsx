@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminLayout } from "@/components/AdminLayout";
@@ -9,6 +10,7 @@ import { Loader2 } from "lucide-react";
 
 const Settings = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [venueId, setVenueId] = useState<string | null>(null);
@@ -41,25 +43,25 @@ const Settings = () => {
     }).eq("id", venueId);
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Saved");
+    else toast.success(t("settings.saved"));
   };
 
   if (loading) return <AdminLayout><div className="p-12 flex justify-center"><Loader2 className="animate-spin text-primary" /></div></AdminLayout>;
 
-  if (!venueId) return <AdminLayout><div className="p-8">Create a venue from the Dashboard first.</div></AdminLayout>;
+  if (!venueId) return <AdminLayout><div className="p-8">{t("settings.createFirst")}</div></AdminLayout>;
 
   return (
     <AdminLayout>
       <div className="px-4 sm:px-8 py-8 max-w-2xl mx-auto">
-        <h1 className="font-serif text-4xl mb-8">Settings</h1>
+        <h1 className="font-serif text-4xl mb-8">{t("settings.title")}</h1>
         <VelvetCard className="p-6 sm:p-8 space-y-5">
-          <Field label="Venue name" value={name} onChange={setName} />
-          <Field label="Slug (URL)" value={slug} onChange={(v) => setSlug(v.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} hint="Used in /c/your-slug" />
-          <Field label="Benefit headline" value={headline} onChange={setHeadline} />
-          <Field label="Benefit description" value={description} onChange={setDescription} multiline />
-          <Field label="Code prefix" value={prefix} onChange={(v) => setPrefix(v.toUpperCase().slice(0, 8))} hint="e.g. CLUB → CLUB-4821" />
+          <Field label={t("settings.venueName")} value={name} onChange={setName} />
+          <Field label={t("settings.slug")} value={slug} onChange={(v) => setSlug(v.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} hint={t("settings.slugHint")} />
+          <Field label={t("settings.benefitHeadline")} value={headline} onChange={setHeadline} />
+          <Field label={t("settings.benefitDesc")} value={description} onChange={setDescription} multiline />
+          <Field label={t("settings.codePrefix")} value={prefix} onChange={(v) => setPrefix(v.toUpperCase().slice(0, 8))} hint={t("settings.codePrefixHint")} />
           <Button variant="gold" size="lg" onClick={save} disabled={saving} className="w-full">
-            {saving ? <Loader2 className="animate-spin" /> : "Save changes"}
+            {saving ? <Loader2 className="animate-spin" /> : t("settings.saveChanges")}
           </Button>
         </VelvetCard>
       </div>

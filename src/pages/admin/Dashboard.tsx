@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminLayout } from "@/components/AdminLayout";
@@ -22,6 +23,7 @@ type Stats = {
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +57,7 @@ const Dashboard = () => {
     }).eq("id", venue.id);
     setSavingBenefit(false);
     if (error) toast.error(error.message);
-    else toast.success("Gift updated");
+    else toast.success(t("dashboard.giftUpdated"));
   }
 
   async function loadStats(venueId: string) {
@@ -100,42 +102,42 @@ const Dashboard = () => {
     <AdminLayout>
       <div className="px-4 sm:px-8 py-8 max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="font-serif text-4xl">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">Tonight's pulse.</p>
+          <h1 className="font-serif text-4xl">{t("dashboard.title")}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t("dashboard.subtitle")}</p>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-24"><Loader2 className="animate-spin text-primary" /></div>
         ) : !venue ? (
           <VelvetCard className="p-10 text-center max-w-md mx-auto">
-            <h2 className="font-serif text-2xl mb-2">Create your venue</h2>
-            <p className="text-sm text-muted-foreground mb-6">One nightclub per account for now. You can rename it after.</p>
+            <h2 className="font-serif text-2xl mb-2">{t("dashboard.createVenue")}</h2>
+            <p className="text-sm text-muted-foreground mb-6">{t("dashboard.oneVenue")}</p>
             <Button variant="gold" size="lg" onClick={createDefaultVenue} disabled={creating}>
-              {creating ? <Loader2 className="animate-spin" /> : "Create venue"}
+              {creating ? <Loader2 className="animate-spin" /> : t("dashboard.create")}
             </Button>
           </VelvetCard>
         ) : (
           <>
             {/* Stats grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <StatCard icon={Users} label="Customers" value={stats?.totalCustomers ?? 0} />
-              <StatCard icon={UserPlus} label="New" value={stats?.newCustomers ?? 0} />
-              <StatCard icon={Repeat} label="Returning" value={stats?.returning ?? 0} />
-              <StatCard icon={TicketCheck} label="Redemptions" value={stats?.redeemed ?? 0} />
+              <StatCard icon={Users} label={t("dashboard.customers")} value={stats?.totalCustomers ?? 0} />
+              <StatCard icon={UserPlus} label={t("dashboard.new")} value={stats?.newCustomers ?? 0} />
+              <StatCard icon={Repeat} label={t("dashboard.returning")} value={stats?.returning ?? 0} />
+              <StatCard icon={TicketCheck} label={t("dashboard.redemptions")} value={stats?.redeemed ?? 0} />
             </div>
 
             {/* Gift / Benefit editor */}
             <VelvetCard className="p-6 sm:p-8 mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <Gift size={18} className="text-primary" />
-                <h3 className="font-serif text-xl">Tonight's gift</h3>
+                <h3 className="font-serif text-xl">{t("dashboard.tonightsGift")}</h3>
               </div>
               <p className="text-xs text-muted-foreground mb-5">
-                Shown to every customer that scans your QR. Saved on each new code.
+                {t("dashboard.giftHelp")}
               </p>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Headline</label>
+                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("dashboard.headline")}</label>
                   <input
                     value={headline}
                     onChange={(e) => setHeadline(e.target.value)}
@@ -144,7 +146,7 @@ const Dashboard = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Description</label>
+                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("dashboard.description")}</label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -154,7 +156,7 @@ const Dashboard = () => {
                   />
                 </div>
                 <Button variant="gold" size="lg" onClick={saveBenefit} disabled={savingBenefit} className="w-full sm:w-auto">
-                  {savingBenefit ? <Loader2 className="animate-spin" /> : <><Save size={16} /> Save gift</>}
+                  {savingBenefit ? <Loader2 className="animate-spin" /> : <><Save size={16} /> {t("dashboard.saveGift")}</>}
                 </Button>
               </div>
             </VelvetCard>
@@ -164,22 +166,22 @@ const Dashboard = () => {
               <VelvetCard className="p-6 lg:col-span-1">
                 <div className="flex items-center gap-2 mb-4">
                   <QrCode size={18} className="text-primary" />
-                  <h3 className="font-serif text-xl">Your QR</h3>
+                  <h3 className="font-serif text-xl">{t("dashboard.yourQr")}</h3>
                 </div>
                 <div className="bg-background p-4 rounded-lg flex items-center justify-center mb-4">
                   <QRCodeSVG value={checkinUrl} size={180} bgColor="transparent" fgColor="hsl(43 65% 53%)" level="M" />
                 </div>
                 <div className="text-xs text-muted-foreground break-all bg-secondary/40 p-2 rounded mb-3">{checkinUrl}</div>
                 <Button variant="outline" size="sm" className="w-full" asChild>
-                  <Link to={`/c/${venue.slug}`} target="_blank">Open check-in page</Link>
+                  <Link to={`/c/${venue.slug}`} target="_blank">{t("dashboard.openCheckin")}</Link>
                 </Button>
               </VelvetCard>
 
               {/* Top customers */}
               <VelvetCard className="p-6 lg:col-span-2">
-                <h3 className="font-serif text-xl mb-4">Top 10 by visits</h3>
+                <h3 className="font-serif text-xl mb-4">{t("dashboard.topByVisits")}</h3>
                 {stats?.top.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-8 text-center">No check-ins yet. Share your QR to get started.</p>
+                  <p className="text-sm text-muted-foreground py-8 text-center">{t("dashboard.noCheckins")}</p>
                 ) : (
                   <div className="divide-y divide-border">
                     {stats?.top.map((c, i) => (
@@ -187,7 +189,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-3">
                           <span className="text-primary font-serif text-lg w-6">{i + 1}</span>
                           <div>
-                            <div className="font-medium text-sm">{c.name ?? "Anonymous"}</div>
+                            <div className="font-medium text-sm">{c.name ?? t("dashboard.anonymous")}</div>
                             <div className="text-xs text-muted-foreground">{c.phone}</div>
                           </div>
                         </div>
@@ -201,7 +203,7 @@ const Dashboard = () => {
 
             <div className="mt-6">
               <Button asChild variant="gold" size="lg">
-                <Link to="/admin/validator"><ScanLine size={16} /> Go to Validator</Link>
+                <Link to="/admin/validator"><ScanLine size={16} /> {t("dashboard.goValidator")}</Link>
               </Button>
             </div>
           </>

@@ -26,6 +26,9 @@ const Dashboard = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
+  const [savingBenefit, setSavingBenefit] = useState(false);
 
   useEffect(() => { (async () => loadAll())(); }, [user?.id]);
 

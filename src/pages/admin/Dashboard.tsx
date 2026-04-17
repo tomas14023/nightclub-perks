@@ -35,11 +35,27 @@ const Dashboard = () => {
   async function loadAll() {
     if (!user) return;
     setLoading(true);
-    const { data: venues } = await supabase.from("venues").select("id,name,slug").eq("owner_id", user.id).limit(1);
+    const { data: venues } = await supabase.from("venues").select("*").eq("owner_id", user.id).limit(1);
     const v = venues?.[0] ?? null;
-    setVenue(v);
-    if (v) await loadStats(v.id);
+    setVenue(v ? { id: v.id, name: v.name, slug: v.slug } : null);
+    if (v) {
+      setHeadline(v.benefit_headline ?? "");
+      setDescription(v.benefit_description ?? "");
+      await loadStats(v.id);
+    }
     setLoading(false);
+  }
+
+  async function saveBenefit() {
+    if (!venue) return;
+    setSavingBenefit(true);
+    const { error } = await supabase.from("venues").update({
+      benefit_headline: headline,
+      benefit_description: description,
+    }).eq("id", venue.id);
+    setSavingBenefit(false);
+    if (error) toast.error(error.message);
+    else toast.success("Gift updated");
   }
 
   async function loadStats(venueId: string) {

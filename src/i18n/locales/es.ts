@@ -22,7 +22,7 @@ export const es = {
   landing: {
     tag: "Plataforma de Beneficios QR",
     titleA: "Escanea. Recibe el código.",
-    titleB: "Salta el cordón.",
+    titleB: "Salta la fila.",
     subtitle:
       "Un sistema de check-in sin fricción para discotecas. Los clientes escanean, reclaman su perk y lo canjean en la barra en segundos.",
     tryCheckin: "Probar el check-in",

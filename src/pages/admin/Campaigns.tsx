@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AdminLayout } from "@/components/AdminLayout";
@@ -12,6 +13,7 @@ const DEFAULT_MSG = "Hoy tenemos evento especial 🎉 2x1 hasta las 11PM";
 
 const Campaigns = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [phones, setPhones] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState(DEFAULT_MSG);
@@ -35,12 +37,12 @@ const Campaigns = () => {
     const a = document.createElement("a");
     a.href = url; a.download = `customers-${new Date().toISOString().slice(0,10)}.csv`; a.click();
     URL.revokeObjectURL(url);
-    toast.success(`Exported ${phones.length} numbers`);
+    toast.success(t("campaigns.exportedNums", { count: phones.length }));
   };
 
   const copyAll = async () => {
     await navigator.clipboard.writeText(phones.join("\n"));
-    toast.success("Copied to clipboard");
+    toast.success(t("campaigns.copied"));
   };
 
   const previewLink = buildWaUrl(msg);
@@ -48,31 +50,29 @@ const Campaigns = () => {
   return (
     <AdminLayout>
       <div className="px-4 sm:px-8 py-8 max-w-3xl mx-auto">
-        <h1 className="font-serif text-4xl mb-2">Campaigns</h1>
-        <p className="text-muted-foreground text-sm mb-8">
-          Export your customer list and blast a WhatsApp message via wa.me links.
-        </p>
+        <h1 className="font-serif text-4xl mb-2">{t("campaigns.title")}</h1>
+        <p className="text-muted-foreground text-sm mb-8">{t("campaigns.subtitle")}</p>
 
         <VelvetCard className="p-6 mb-6">
-          <h3 className="font-serif text-xl mb-4">Audience</h3>
+          <h3 className="font-serif text-xl mb-4">{t("campaigns.audience")}</h3>
           {loading ? (
             <Loader2 className="animate-spin text-primary" />
           ) : (
             <>
               <div className="text-3xl font-serif text-gold tabular-nums">{phones.length}</div>
-              <div className="text-xs tracking-luxe uppercase text-muted-foreground mb-5">Phone numbers</div>
+              <div className="text-xs tracking-luxe uppercase text-muted-foreground mb-5">{t("campaigns.phoneNumbers")}</div>
               <div className="flex flex-wrap gap-3">
                 <Button variant="outline" onClick={exportCsv} disabled={!phones.length}>
-                  <Download size={14} /> Export CSV
+                  <Download size={14} /> {t("campaigns.exportCsv")}
                 </Button>
-                <Button variant="ghost" onClick={copyAll} disabled={!phones.length}>Copy numbers</Button>
+                <Button variant="ghost" onClick={copyAll} disabled={!phones.length}>{t("campaigns.copyNumbers")}</Button>
               </div>
             </>
           )}
         </VelvetCard>
 
         <VelvetCard className="p-6">
-          <h3 className="font-serif text-xl mb-4">Message</h3>
+          <h3 className="font-serif text-xl mb-4">{t("campaigns.message")}</h3>
           <textarea
             value={msg}
             onChange={(e) => setMsg(e.target.value)}
@@ -81,11 +81,11 @@ const Campaigns = () => {
           />
           <a href={previewLink} target="_blank" rel="noopener noreferrer">
             <Button variant="gold" size="lg" className="w-full">
-              <MessageCircle size={16} /> Preview WhatsApp link
+              <MessageCircle size={16} /> {t("campaigns.previewWa")}
             </Button>
           </a>
           <p className="text-xs text-muted-foreground mt-4">
-            Tip: Open WhatsApp Web, paste this link, and send to a broadcast list. For each customer, append their phone:
+            {t("campaigns.tip")}
             <code className="block mt-2 bg-secondary/50 p-2 rounded text-[11px] break-all">
               https://wa.me/[PHONE]?text={encodeURIComponent(msg)}
             </code>

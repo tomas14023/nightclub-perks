@@ -63,10 +63,11 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
             </NavLink>
           ))}
         </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-          <div className="text-xs text-muted-foreground truncate mb-2">{session.user.email}</div>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-2">
+          <div className="text-xs text-muted-foreground truncate">{session.user.email}</div>
+          <LanguageToggle className="w-full justify-start" />
           <Button variant="ghost" size="sm" className="w-full justify-start" onClick={async () => { await signOut(); navigate("/"); }}>
-            <LogOut size={14} /> Sign out
+            <LogOut size={14} /> {t("common.signOut")}
           </Button>
         </div>
       </aside>
@@ -74,7 +75,10 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
       {/* Mobile topbar */}
       <header className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card sticky top-0 z-30">
         <Brand label="Velvet" />
-        <button onClick={() => setOpen(true)} className="text-foreground"><Menu /></button>
+        <div className="flex items-center gap-1">
+          <LanguageToggle />
+          <button onClick={() => setOpen(true)} className="text-foreground"><Menu /></button>
+        </div>
       </header>
 
       {open && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setOpen(false)} />}

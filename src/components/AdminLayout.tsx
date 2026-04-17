@@ -1,24 +1,27 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Users, ScanLine, Megaphone, Settings, LogOut, Menu, X } from "lucide-react";
 import { Brand } from "@/components/Brand";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const nav = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
-  { to: "/admin/validator", label: "Validator", icon: ScanLine },
-  { to: "/admin/customers", label: "Customers", icon: Users },
-  { to: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
-  { to: "/admin/settings", label: "Settings", icon: Settings },
-];
 
 export const AdminLayout = ({ children }: { children: ReactNode }) => {
   const { session, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+
+  const nav = [
+    { to: "/admin", label: t("nav.dashboard"), icon: LayoutDashboard, end: true },
+    { to: "/admin/validator", label: t("nav.validator"), icon: ScanLine },
+    { to: "/admin/customers", label: t("nav.customers"), icon: Users },
+    { to: "/admin/campaigns", label: t("nav.campaigns"), icon: Megaphone },
+    { to: "/admin/settings", label: t("nav.settings"), icon: Settings },
+  ];
 
   useEffect(() => {
     if (!loading && !session) navigate("/auth", { replace: true });

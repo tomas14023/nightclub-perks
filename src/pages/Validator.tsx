@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { VelvetCard } from "@/components/VelvetCard";
@@ -13,6 +14,7 @@ type CheckResult =
   | { state: "invalid" };
 
 const Validator = () => {
+  const { t } = useTranslation();
   const [code, setCode] = useState("");
   const [checking, setChecking] = useState(false);
   const [redeeming, setRedeeming] = useState(false);
@@ -50,9 +52,9 @@ const Validator = () => {
     const r = data?.[0];
     if (r?.success) {
       setDone(true);
-      toast.success("Redeemed");
+      toast.success(t("validator.redeemed"));
     } else {
-      toast.error(r?.message ?? "Failed");
+      toast.error(r?.message ?? t("validator.failed"));
     }
   };
 
@@ -60,13 +62,13 @@ const Validator = () => {
     <AdminLayout>
       <AmberBackdrop />
       <div className="max-w-xl mx-auto w-full px-4 py-8">
-        <h1 className="font-serif text-4xl mb-2">Bar Validator</h1>
-        <p className="text-muted-foreground text-sm mb-8">Enter the customer's code to redeem their benefit.</p>
+        <h1 className="font-serif text-4xl mb-2">{t("validator.title")}</h1>
+        <p className="text-muted-foreground text-sm mb-8">{t("validator.subtitle")}</p>
 
         <VelvetCard className="p-6 sm:p-8">
           <form onSubmit={onValidate} className="space-y-6">
             <div>
-              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-3">Enter code</label>
+              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-3">{t("validator.enterCode")}</label>
               <input
                 type="text"
                 autoFocus
@@ -78,7 +80,7 @@ const Validator = () => {
               />
             </div>
             <Button type="submit" variant="gold" size="xl" className="w-full" disabled={checking || !code.trim()}>
-              {checking ? <Loader2 className="animate-spin" /> : "Validate"}
+              {checking ? <Loader2 className="animate-spin" /> : t("validator.validate")}
             </Button>
           </form>
         </VelvetCard>
@@ -93,8 +95,8 @@ const Validator = () => {
                     <CheckCircle2 className="text-success" size={26} />
                   </div>
                   <div>
-                    <div className="text-success text-xs tracking-luxe uppercase">Valid</div>
-                    <div className="font-serif text-2xl">{result.name ?? "Guest"}</div>
+                    <div className="text-success text-xs tracking-luxe uppercase">{t("validator.valid")}</div>
+                    <div className="font-serif text-2xl">{result.name ?? t("validator.guest")}</div>
                   </div>
                 </div>
                 <div className="rounded-lg bg-background/60 p-4 mb-6 text-sm text-foreground/90">
@@ -102,9 +104,9 @@ const Validator = () => {
                 </div>
                 <div className="flex gap-3">
                   <Button variant="success" size="lg" className="flex-1" onClick={onRedeem} disabled={redeeming}>
-                    {redeeming ? <Loader2 className="animate-spin" /> : "Mark as redeemed"}
+                    {redeeming ? <Loader2 className="animate-spin" /> : t("validator.markRedeemed")}
                   </Button>
-                  <Button variant="ghost" size="lg" onClick={reset}>Cancel</Button>
+                  <Button variant="ghost" size="lg" onClick={reset}>{t("common.cancel")}</Button>
                 </div>
               </VelvetCard>
             )}
@@ -112,9 +114,9 @@ const Validator = () => {
             {done && (
               <VelvetCard className="p-8 text-center border-success/30">
                 <CheckCircle2 className="text-success mx-auto mb-3" size={48} />
-                <div className="font-serif text-3xl mb-2">Redeemed</div>
-                <p className="text-sm text-muted-foreground mb-6">Enjoy the night.</p>
-                <Button variant="gold" size="lg" onClick={reset} className="w-full">Next code</Button>
+                <div className="font-serif text-3xl mb-2">{t("validator.redeemed")}</div>
+                <p className="text-sm text-muted-foreground mb-6">{t("validator.enjoyNight")}</p>
+                <Button variant="gold" size="lg" onClick={reset} className="w-full">{t("validator.nextCode")}</Button>
               </VelvetCard>
             )}
 
@@ -125,12 +127,12 @@ const Validator = () => {
                     <AlertTriangle className="text-warning" size={26} />
                   </div>
                   <div>
-                    <div className="text-warning text-xs tracking-luxe uppercase">Already redeemed</div>
-                    <div className="font-serif text-2xl">{result.name ?? "Guest"}</div>
+                    <div className="text-warning text-xs tracking-luxe uppercase">{t("validator.alreadyRedeemed")}</div>
+                    <div className="font-serif text-2xl">{result.name ?? t("validator.guest")}</div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-5">This code has already been used.</p>
-                <Button variant="outline" size="lg" onClick={reset} className="w-full">Try another</Button>
+                <p className="text-sm text-muted-foreground mb-5">{t("validator.alreadyUsed")}</p>
+                <Button variant="outline" size="lg" onClick={reset} className="w-full">{t("validator.tryAnother")}</Button>
               </VelvetCard>
             )}
 
@@ -141,11 +143,11 @@ const Validator = () => {
                     <XCircle className="text-destructive" size={26} />
                   </div>
                   <div>
-                    <div className="text-destructive text-xs tracking-luxe uppercase">Invalid code</div>
-                    <div className="font-serif text-2xl">Not found</div>
+                    <div className="text-destructive text-xs tracking-luxe uppercase">{t("validator.invalidCode")}</div>
+                    <div className="font-serif text-2xl">{t("validator.notFound")}</div>
                   </div>
                 </div>
-                <Button variant="outline" size="lg" onClick={reset} className="w-full">Try again</Button>
+                <Button variant="outline" size="lg" onClick={reset} className="w-full">{t("validator.tryAgain")}</Button>
               </VelvetCard>
             )}
           </div>

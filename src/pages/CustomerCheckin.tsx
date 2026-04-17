@@ -1,20 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { VelvetCard } from "@/components/VelvetCard";
 import { AmberBackdrop } from "@/components/AmberBackdrop";
 import { Brand } from "@/components/Brand";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { CheckCircle2, Wine, MessageCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { buildWaUrl } from "@/lib/utils";
-
-const schema = z.object({
-  phone: z.string().trim().min(6, "Enter a valid phone").max(20),
-  name: z.string().trim().max(100).optional().or(z.literal("")),
-  email: z.string().trim().email("Invalid email").max(255).optional().or(z.literal("")),
-});
 
 type Venue = {
   id: string;
@@ -33,6 +29,7 @@ type Result = {
 
 const CustomerCheckin = () => {
   const { slug = "nocturne" } = useParams();
+  const { t } = useTranslation();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loadingVenue, setLoadingVenue] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -40,6 +37,12 @@ const CustomerCheckin = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [result, setResult] = useState<Result | null>(null);
+
+  const schema = z.object({
+    phone: z.string().trim().min(6, t("checkin.invalidPhone")).max(20),
+    name: z.string().trim().max(100).optional().or(z.literal("")),
+    email: z.string().trim().email(t("checkin.invalidEmail")).max(255).optional().or(z.literal("")),
+  });
 
   useEffect(() => {
     (async () => {
@@ -50,13 +53,13 @@ const CustomerCheckin = () => {
         .eq("active", true)
         .maybeSingle();
       if (error || !data) {
-        toast.error("Venue not found");
+        toast.error(t("checkin.venueNotFound"));
       } else {
         setVenue(data);
       }
       setLoadingVenue(false);
     })();
-  }, [slug]);
+  }, [slug, t]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +77,7 @@ const CustomerCheckin = () => {
     });
     setSubmitting(false);
     if (error || !data || data.length === 0) {
-      toast.error(error?.message ?? "Check-in failed");
+      toast.error(error?.message ?? t("checkin.failed"));
       return;
     }
     const r = data[0];
@@ -102,8 +105,8 @@ const CustomerCheckin = () => {
       <>
         <AmberBackdrop />
         <div className="min-h-dvh flex flex-col items-center justify-center gap-4 p-6 text-center">
-          <h1 className="font-serif text-3xl">Venue not found</h1>
-          <Button asChild variant="outline"><Link to="/">Go home</Link></Button>
+          <h1 className="font-serif text-3xl">{t("checkin.venueNotFound")}</h1>
+          <Button asChild variant="outline"><Link to="/">{t("checkin.goHome")}</Link></Button>
         </div>
       </>
     );
@@ -111,26 +114,29 @@ const CustomerCheckin = () => {
 
   // SUCCESS SCREEN
   if (result) {
-    const waMsg = `${result.venue_name}: You're in ✅\nBenefit: ${result.benefit}\nYour code: ${result.code}\nShow this at the bar to redeem.`;
+    const waMsg = `${result.venue_name}: ${t("checkin.youreIn")} ✅\n${t("checkin.yourBenefit")}: ${result.benefit}\n${t("checkin.yourCode")}: ${result.code}\n${t("checkin.showAtBar")}`;
     return (
       <>
         <AmberBackdrop />
         <main className="min-h-dvh flex items-center justify-center p-4">
           <VelvetCard className="w-full max-w-[440px] p-8 sm:p-10 animate-fade-up">
-            <Brand label={result.venue_name} className="mb-8" />
+            <div className="flex items-center justify-between mb-8">
+              <Brand label={result.venue_name} />
+              <LanguageToggle />
+            </div>
 
             <div className="flex flex-col items-center text-center gap-3 mb-8">
               <div className="size-14 rounded-full bg-success/15 flex items-center justify-center ring-1 ring-success/30">
                 <CheckCircle2 className="text-success" size={28} />
               </div>
-              <h1 className="font-serif text-3xl">You're in</h1>
+              <h1 className="font-serif text-3xl">{t("checkin.youreIn")}</h1>
               {result.customer_name && (
-                <p className="text-muted-foreground text-sm">Welcome, {result.customer_name}</p>
+                <p className="text-muted-foreground text-sm">{t("checkin.welcome", { name: result.customer_name })}</p>
               )}
             </div>
 
             <div className="rounded-xl bg-background/60 border border-primary/20 p-6 mb-6 text-center">
-              <div className="text-[10px] tracking-luxe uppercase text-primary mb-3">Your benefit</div>
+              <div className="text-[10px] tracking-luxe uppercase text-primary mb-3">{t("checkin.yourBenefit")}</div>
               <p className="font-serif text-xl text-foreground/90">{result.benefit}</p>
             </div>
 
@@ -138,7 +144,7 @@ const CustomerCheckin = () => {
               <div className="rounded-[10px] bg-card p-6 text-center relative overflow-hidden">
                 <div className="absolute inset-0 animate-shimmer opacity-30"
                   style={{ background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), transparent)" }} />
-                <div className="text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Your code</div>
+                <div className="text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("checkin.yourCode")}</div>
                 <div className="font-serif text-5xl sm:text-6xl text-gold tracking-wider tabular-nums select-all">
                   {result.code}
                 </div>
@@ -146,7 +152,7 @@ const CustomerCheckin = () => {
             </div>
 
             <p className="text-center text-xs tracking-wider-luxe uppercase text-muted-foreground mb-6">
-              Show this code at the bar to redeem
+              {t("checkin.showAtBar")}
             </p>
 
             <a
@@ -156,7 +162,7 @@ const CustomerCheckin = () => {
               className="block"
             >
               <Button variant="outline" className="w-full" size="lg">
-                <MessageCircle size={16} /> Send to WhatsApp
+                <MessageCircle size={16} /> {t("checkin.sendWa")}
               </Button>
             </a>
 
@@ -164,7 +170,7 @@ const CustomerCheckin = () => {
               onClick={() => { setResult(null); setPhone(""); setName(""); setEmail(""); }}
               className="block mx-auto mt-6 text-xs text-muted-foreground hover:text-primary tracking-wider-luxe uppercase transition-colors"
             >
-              Check in another guest
+              {t("checkin.checkAnother")}
             </button>
           </VelvetCard>
         </main>
@@ -178,14 +184,17 @@ const CustomerCheckin = () => {
       <AmberBackdrop />
       <main className="min-h-dvh flex items-center justify-center p-4">
         <VelvetCard className="w-full max-w-[440px] p-8 sm:p-10 animate-fade-up">
-          <Brand label={venue.name} className="mb-8" />
+          <div className="flex items-center justify-between mb-8">
+            <Brand label={venue.name} />
+            <LanguageToggle />
+          </div>
 
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl text-foreground text-balance leading-tight">
               {venue.benefit_headline}
             </h1>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-              Drop your number to claim the perk. Show your code at the bar.
+              {t("checkin.dropNumber")}
             </p>
           </div>
 
@@ -196,7 +205,7 @@ const CustomerCheckin = () => {
 
           <form onSubmit={onSubmit} className="space-y-5">
             <div>
-              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Phone *</label>
+              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("checkin.phone")}</label>
               <input
                 type="tel"
                 required
@@ -209,7 +218,7 @@ const CustomerCheckin = () => {
               />
             </div>
             <div>
-              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Name (optional)</label>
+              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("checkin.nameOpt")}</label>
               <input
                 type="text"
                 value={name}
@@ -219,7 +228,7 @@ const CustomerCheckin = () => {
               />
             </div>
             <div>
-              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Email (optional)</label>
+              <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">{t("checkin.emailOpt")}</label>
               <input
                 type="email"
                 value={email}
@@ -230,12 +239,12 @@ const CustomerCheckin = () => {
             </div>
 
             <Button type="submit" variant="gold" size="xl" className="w-full mt-8" disabled={submitting}>
-              {submitting ? <Loader2 className="animate-spin" /> : "Get my code"}
+              {submitting ? <Loader2 className="animate-spin" /> : t("checkin.getMyCode")}
             </Button>
           </form>
 
           <p className="text-center text-[10px] tracking-luxe uppercase text-muted-foreground/60 mt-6">
-            21+ · Strict Dress Code
+            {t("checkin.policy")}
           </p>
         </VelvetCard>
       </main>

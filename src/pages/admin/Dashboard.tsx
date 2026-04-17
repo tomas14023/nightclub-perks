@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { AdminLayout } from "@/components/AdminLayout";
 import { VelvetCard } from "@/components/VelvetCard";
 import { Button } from "@/components/ui/button";
-import { Users, TicketCheck, UserPlus, Repeat, QrCode, Loader2, ScanLine } from "lucide-react";
+import { Users, TicketCheck, UserPlus, Repeat, QrCode, Loader2, ScanLine, Gift, Save } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { toast } from "sonner";
 
 type Venue = { id: string; name: string; slug: string };
 
@@ -25,17 +26,36 @@ const Dashboard = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
+  const [savingBenefit, setSavingBenefit] = useState(false);
 
   useEffect(() => { (async () => loadAll())(); }, [user?.id]);
 
   async function loadAll() {
     if (!user) return;
     setLoading(true);
-    const { data: venues } = await supabase.from("venues").select("id,name,slug").eq("owner_id", user.id).limit(1);
+    const { data: venues } = await supabase.from("venues").select("*").eq("owner_id", user.id).limit(1);
     const v = venues?.[0] ?? null;
-    setVenue(v);
-    if (v) await loadStats(v.id);
+    setVenue(v ? { id: v.id, name: v.name, slug: v.slug } : null);
+    if (v) {
+      setHeadline(v.benefit_headline ?? "");
+      setDescription(v.benefit_description ?? "");
+      await loadStats(v.id);
+    }
     setLoading(false);
+  }
+
+  async function saveBenefit() {
+    if (!venue) return;
+    setSavingBenefit(true);
+    const { error } = await supabase.from("venues").update({
+      benefit_headline: headline,
+      benefit_description: description,
+    }).eq("id", venue.id);
+    setSavingBenefit(false);
+    if (error) toast.error(error.message);
+    else toast.success("Gift updated");
   }
 
   async function loadStats(venueId: string) {
@@ -103,6 +123,41 @@ const Dashboard = () => {
               <StatCard icon={Repeat} label="Returning" value={stats?.returning ?? 0} />
               <StatCard icon={TicketCheck} label="Redemptions" value={stats?.redeemed ?? 0} />
             </div>
+
+            {/* Gift / Benefit editor */}
+            <VelvetCard className="p-6 sm:p-8 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Gift size={18} className="text-primary" />
+                <h3 className="font-serif text-xl">Tonight's gift</h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-5">
+                Shown to every customer that scans your QR. Saved on each new code.
+              </p>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Headline</label>
+                  <input
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
+                    placeholder="Scan & get 2x1 drinks until 11PM 🍸"
+                    className="w-full bg-background/60 border border-border rounded-lg px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] tracking-luxe uppercase text-muted-foreground mb-2">Description</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    placeholder="Enjoy your 2x1 drinks until 11PM"
+                    className="w-full bg-background/60 border border-border rounded-lg px-4 py-3 text-sm outline-none focus:border-primary transition-colors resize-none"
+                  />
+                </div>
+                <Button variant="gold" size="lg" onClick={saveBenefit} disabled={savingBenefit} className="w-full sm:w-auto">
+                  {savingBenefit ? <Loader2 className="animate-spin" /> : <><Save size={16} /> Save gift</>}
+                </Button>
+              </div>
+            </VelvetCard>
 
             <div className="grid lg:grid-cols-3 gap-6">
               {/* QR */}

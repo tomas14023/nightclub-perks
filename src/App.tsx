@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import CustomerCheckin from "./pages/CustomerCheckin";
@@ -27,11 +28,13 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/c/:slug" element={<CustomerCheckin />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<Dashboard />} />
-            <Route path="/admin/validator" element={<Validator />} />
-            <Route path="/admin/customers" element={<Customers />} />
-            <Route path="/admin/campaigns" element={<Campaigns />} />
-            <Route path="/admin/settings" element={<Settings />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/admin" element={<Dashboard />} />
+              <Route path="/admin/validator" element={<Validator />} />
+              <Route path="/admin/customers" element={<Customers />} />
+              <Route path="/admin/campaigns" element={<Campaigns />} />
+              <Route path="/admin/settings" element={<Settings />} />
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
